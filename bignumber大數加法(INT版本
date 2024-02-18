@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// 大數加法函數，返回結果為 int 指針
+int* bigNumberAddition2(int* a, int* b) {
+    char array1[500] = { '\0' };
+    char array2[500] = { '\0' };
+
+    // 將整數轉換為字符串
+    sprintf(array1, "%d", *a);
+    sprintf(array2, "%d", *b);
+
+    int len_a = strlen(array1);
+    int len_b = strlen(array2);
+
+    // 反轉字符串以方便從低位開始相加
+    for (int i = 0; i < len_a / 2; i++) {
+        char temp = array1[i];
+        array1[i] = array1[len_a - 1 - i];
+        array1[len_a - 1 - i] = temp;
+    }
+    for (int i = 0; i < len_b / 2; i++) {
+        char temp = array2[i];
+        array2[i] = array2[len_b - 1 - i];
+        array2[len_b - 1 - i] = temp;
+    }
+
+    int max_len = len_a > len_b ? len_a : len_b;
+    // 為結果數組分配記憶體，多出一個位置存儲可能的進位
+    int* sum = (int*)calloc(max_len + 1, sizeof(int));
+
+    int carry = 0; // 初始化進位為 0
+    for (int i = 0; i < max_len; i++) {
+        int digit1 = i < len_a ? array1[i] - '0' : 0;
+        int digit2 = i < len_b ? array2[i] - '0' : 0;
+        int digitsum = digit1 + digit2 + carry; // 計算總和加上進位
+        sum[i] = digitsum % 10; // 存儲個位數
+        carry = digitsum / 10; // 計算新的進位
+    }
+
+    // 如果最後還有進位，將其添加到結果數組的末尾
+    if (carry > 0) {
+        sum[max_len] = carry;
+    }
+
+    return sum; // 返回結果
+}
+
+int main() {
+    int a, b;
+    scanf("%d %d", &a, &b); // 讀入兩個整數
+
+    int* result = bigNumberAddition2(&a, &b); // 調用大數加法函數
+
+    // 從最高位開始打印結果
+    int i = 499; // 假設結果不會超過 500 位
+    while (i > 0 && result[i] == 0) i--; // 跳過前導 0
+    for (; i >= 0; i--) {
+        printf("%d", result[i]);
+    }
+    printf("\n");
+
+    free(result); // 釋放記憶體
+    return 0;
+}
