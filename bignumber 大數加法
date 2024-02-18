@@ -1,0 +1,89 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdlib.h>
+#include <stdio.h>
+#include< math.h>
+#include< string.h>
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+char* bigNumberAddition(int* a, int* b) {
+
+    char array1[500], array2[500];
+    //將整數轉換成字符
+    sprintf(array1, "%d", *a);
+    sprintf(array2, "%d", *b);
+    //字符長度
+    int len_a = strlen(array1), len_b = strlen(array2);
+    //max_len = len_a > len_b ? 如果ture=len_a 如果false=len_b 
+    int max_len = len_a > len_b ? len_a : len_b;
+
+    // 反轉字符串
+    for (int i = 0; i < len_a / 2; i++) {
+        char temp = array1[i];
+        array1[i] = array1[len_a - 1 - i];
+        array1[len_a - 1 - i] = temp;
+    }
+    for (int i = 0; i < len_b / 2; i++) {
+        char temp = array2[i];
+        array2[i] = array2[len_b - 1 - i];
+        array2[len_b - 1 - i] = temp;
+    }
+
+    // 加法操作
+    //創造一維陣列
+    char* sum = (char*)calloc(max_len + 2, sizeof(char));
+    int carry = 0;
+    //
+    for (int i = 0; i < max_len; i++) {
+        //字符一個一個轉換成數字
+        int digit1, digit2;
+        if (i < len_a) {
+            digit1 = array1[i] - '0'; // 如果索引 i 小於 array1 的長度，則獲取 array1 中相應位置的數字
+        }
+        else {
+            digit1 = 0; // 否則設置 digit1 為 0
+        }
+        //字符一個一個轉換成數字
+        if (i < len_b) {
+            digit2 = array2[i] - '0'; // 如果索引 i 小於 array2 的長度，則獲取 array2 中相應位置的數字
+        }
+        else {
+            digit2 = 0; // 否則設置 digit2 為 0
+        }
+        //字符一個一個轉換成數字後相加
+        int digitSum = digit1 + digit2 + carry;
+        //再轉回字符:除以10後的餘數再加上'0'
+        sum[i] = (digitSum % 10) + '0';
+        //進位的數字紀錄
+        carry = digitSum / 10;
+    }
+
+    //如果進位數字不等於0則最後一數字=carry
+    if (carry) {
+        sum[max_len] = carry + '0';
+    }
+
+    // 反轉結果
+    int len_sum = strlen(sum);
+    for (int i = 0; i < len_sum / 2; i++) {
+        char temp = sum[i];
+        sum[i] = sum[len_sum - 1 - i];
+        sum[len_sum - 1 - i] = temp;
+    }
+    return sum;
+}
+
+int main() {
+    int a, b;
+    scanf("%d %d", &a, &b);
+
+    char* sumans = bigNumberAddition(&a, &b);
+    printf("%s", sumans);
+
+    free(sumans);
+    return 0;
+}
